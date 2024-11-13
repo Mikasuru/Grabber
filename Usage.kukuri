@@ -1,0 +1,13 @@
+$> Webhook
+const string webhook_url = "https://discord.com/api/webhooks/1305572985557483531/jChiiJTkJO3-TzMCofXOHukzDRYRxcLIR9_NVaj52F57IeDhjLhRm7ii2z09Da3RRIZq";
+
+$> Basic Message
+Payload::SendMessage(webhook_url, "Test message from C++!");
+
+$> Embed Messages
+Payload::Embed embed;
+embed.title = "Test Embed";
+embed.description = "This is a test embed message";
+embed.color = 0x00FF00;
+
+Payload::SendEmbed(webhook_url, embed);

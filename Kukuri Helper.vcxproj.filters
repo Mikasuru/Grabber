@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Module">
+      <UniqueIdentifier>{4d4c3398-d955-4d65-a4fb-b07faa319917}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Extension">
+      <UniqueIdentifier>{ebca3ce1-a444-488e-8fcc-701f15007b40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Extension\Payload">
+      <UniqueIdentifier>{86155850-3696-433b-845b-5a7a2ddd2ba3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Extension\GetDevice">
+      <UniqueIdentifier>{146da276-7e83-43a6-800f-c3b7632513a4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Module\Logger.cpp">
+      <Filter>Source Files\Module</Filter>
+    </ClCompile>
+    <ClCompile Include="Extension\Payload\Payload.cpp">
+      <Filter>Source Files\Extension\Payload</Filter>
+    </ClCompile>
+    <ClCompile Include="Extension\GetDevice\Hardware.cpp">
+      <Filter>Source Files\Extension\GetDevice</Filter>
+    </ClCompile>
+    <ClCompile Include="Extension\GetDevice\SendHardware.cpp">
+      <Filter>Source Files\Extension\GetDevice</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Module\Logger.hpp">
+      <Filter>Source Files\Module</Filter>
+    </ClInclude>
+    <ClInclude Include="Extension\Payload\Payload.hpp">
+      <Filter>Source Files\Extension\Payload</Filter>
+    </ClInclude>
+    <ClInclude Include="Extension\GetDevice\Hardware.hpp">
+      <Filter>Source Files\Extension\GetDevice</Filter>
+    </ClInclude>
+    <ClInclude Include="Extension\GetDevice\SendHardware.hpp">
+      <Filter>Source Files\Extension\GetDevice</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Usage.kukuri">
+      <Filter>Source Files\Extension\Payload</Filter>
+    </None>
+  </ItemGroup>
+</Project>
