@@ -1,10 +1,12 @@
 #pragma once
+#define WIN32_LEAN_AND_MEAN
+#include <winsock2.h>
+#include <windows.h>
 #include <string>
 #include <fstream>
 #include <iostream>
 #include <chrono>
 #include <filesystem>
-#include <windows.h>
 
 class Logger {
 private:
@@ -41,9 +43,3 @@ private:
     std::string getCurrentDateTime();
     void initializeLogFile();
 };
-
-#define LOG_INFO(message) Logger::getInstance()->info(message)
-#define LOG_WARNING(message) Logger::getInstance()->warning(message)
-#define LOG_EXPECTION(message) Logger::getInstance()->expection(message)
-#define LOG_DEBUG(message) Logger::getInstance()->debug(message)
-#define LOG_LOAD(message) Logger::getInstance()->load(message)

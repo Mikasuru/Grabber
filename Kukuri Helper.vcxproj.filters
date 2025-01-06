@@ -25,6 +25,12 @@
     <Filter Include="Source Files\Extension\GetDevice">
       <UniqueIdentifier>{146da276-7e83-43a6-800f-c3b7632513a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Extension\Bot">
+      <UniqueIdentifier>{2420b4b6-61ea-4d16-8819-fd7fef0fe0d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Extension\Command">
+      <UniqueIdentifier>{4a225723-b557-4b2c-9238-a63145d25c69}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -39,8 +45,38 @@
     <ClCompile Include="Extension\GetDevice\Hardware.cpp">
       <Filter>Source Files\Extension\GetDevice</Filter>
     </ClCompile>
-    <ClCompile Include="Extension\GetDevice\SendHardware.cpp">
-      <Filter>Source Files\Extension\GetDevice</Filter>
+    <ClCompile Include="Extension\Bot\HTTPClient.cpp">
+      <Filter>Source Files\Extension\Bot</Filter>
+    </ClCompile>
+    <ClCompile Include="Extension\Command\NetworkManager.cpp">
+      <Filter>Source Files\Extension\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="Extension\Command\VolumeManager.cpp">
+      <Filter>Source Files\Extension\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="Extension\Command\BSoDClient.cpp">
+      <Filter>Source Files\Extension\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="Module\AutoElevate.cpp">
+      <Filter>Source Files\Module</Filter>
+    </ClCompile>
+    <ClCompile Include="Extension\Command\CrashProcess.cpp">
+      <Filter>Source Files\Extension\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="Extension\Command\FileManager.cpp">
+      <Filter>Source Files\Extension\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="Extension\Command\TempCreator.cpp">
+      <Filter>Source Files\Extension\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="Extension\Command\ScreenProcess.cpp">
+      <Filter>Source Files\Extension\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="Extension\Command\FatalScreen.cpp">
+      <Filter>Source Files\Extension\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="Extension\Command\WhiteScreen.cpp">
+      <Filter>Source Files\Extension\Command</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -53,8 +89,38 @@
     <ClInclude Include="Extension\GetDevice\Hardware.hpp">
       <Filter>Source Files\Extension\GetDevice</Filter>
     </ClInclude>
-    <ClInclude Include="Extension\GetDevice\SendHardware.hpp">
-      <Filter>Source Files\Extension\GetDevice</Filter>
+    <ClInclude Include="Extension\Bot\HTTPClient.hpp">
+      <Filter>Source Files\Extension\Bot</Filter>
+    </ClInclude>
+    <ClInclude Include="Extension\Command\NetworkManager.hpp">
+      <Filter>Source Files\Extension\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="Extension\Command\VolumeManager.hpp">
+      <Filter>Source Files\Extension\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="Extension\Command\BSoDClient.hpp">
+      <Filter>Source Files\Extension\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="Module\AutoElevate.hpp">
+      <Filter>Source Files\Module</Filter>
+    </ClInclude>
+    <ClInclude Include="Extension\Command\CrashProcess.hpp">
+      <Filter>Source Files\Extension\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="Extension\Command\FileManager.hpp">
+      <Filter>Source Files\Extension\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="Extension\Command\TempCreator.hpp">
+      <Filter>Source Files\Extension\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="Extension\Command\ScreenProcess.hpp">
+      <Filter>Source Files\Extension\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="Extension\Command\FatalScreen.hpp">
+      <Filter>Source Files\Extension\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="Extension\Command\WhiteScreen.hpp">
+      <Filter>Source Files\Extension\Command</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

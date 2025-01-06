@@ -1,10 +1,11 @@
 #pragma once
-
 #define WIN32_LEAN_AND_MEAN
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 
-// Windows Headers
-#include <Windows.h>
+// Windows Headers 
+#include <winsock2.h>
+#include <windows.h>
+#include <ws2tcpip.h>
 #include <iphlpapi.h>
 #include <Lmcons.h>
 #include <Shlobj.h>
@@ -15,7 +16,8 @@
 #include <string>
 #include <vector>
 
-// Link required libraries
+// Link Libraries
+#pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "iphlpapi.lib")
 #pragma comment(lib, "Userenv.lib")
 #pragma comment(lib, "Shell32.lib")

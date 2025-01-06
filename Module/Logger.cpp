@@ -1,5 +1,7 @@
 ﻿#include "Logger.hpp"
 
+bool SavingLogs = true;
+
 Logger* Logger::instance = nullptr;
 
 Logger::Logger() {
@@ -15,6 +17,9 @@ Logger* Logger::getInstance() {
 }
 
 void Logger::initializeLogFile() {
+    if (SavingLogs == false) {
+        return;
+    }
     std::filesystem::create_directory("Logs");
 
     auto now = std::chrono::system_clock::now();
@@ -99,9 +104,11 @@ void Logger::log(Level level, const std::string& message) {
     std::cout << " (" << timeStr << "): " << message << "\n";
 
     // Save to file
-    if (logFile.is_open()) {
-        logFile << logMessage;
-        logFile.flush();
+    if (SavingLogs == true) {
+        if (logFile.is_open()) {
+            logFile << logMessage;
+            logFile.flush();
+        }
     }
 }
 

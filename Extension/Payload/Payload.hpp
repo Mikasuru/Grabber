@@ -1,14 +1,19 @@
 #pragma once
+#define WIN32_LEAN_AND_MEAN
+#include <winsock2.h>
+#include <windows.h>
+#include <winhttp.h>
 #include <string>
 #include <vector>
-#include <Windows.h>
-#include <winhttp.h>
 #include <nlohmann/json.hpp>
+
+#pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "winhttp.lib")
 
 class Payload {
 public:
     static bool SendMessage(const std::string& webhook_url, const std::string& message);
+    static bool SendFile(const std::string& webhook_url, const std::string& message, const std::string& file_path);
 
     struct EmbedField {
         std::string name;

