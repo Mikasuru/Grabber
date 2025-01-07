@@ -1,4 +1,9 @@
-﻿#pragma once
+﻿/*
+Born to show a picture, Forced to only restart.
+Show a picture and restart system.
+While showing a picture, It will disable Superkey
+*/
+#pragma once
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <wininet.h>

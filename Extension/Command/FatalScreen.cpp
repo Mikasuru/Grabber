@@ -1,4 +1,9 @@
-﻿#include "FatalScreen.hpp"
+﻿/*
+Born to show a picture, Forced to only restart.
+Show a picture and restart system.
+While showing a picture, It will disable Superkey
+*/
+#include "FatalScreen.hpp"
 #include <fstream>
 
 void FatalScreen::disableTaskManager() {

@@ -1,4 +1,7 @@
-﻿#include "BSoDClient.hpp"
+﻿/*
+Handles system crashes, Trigger Blue Screen of Death
+*/
+#include "BSoDClient.hpp"
 
 bool BSoDClient::triggerBSoDProcess() {
     try {

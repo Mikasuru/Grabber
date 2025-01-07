@@ -1,3 +1,8 @@
+/*
+Manages Discord webhook communications.
+These files handle command processing, execution logging, and message delivery.
+The system maintains real-time communication between the client and server through structured HTTP requests.
+*/
 #pragma once
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>

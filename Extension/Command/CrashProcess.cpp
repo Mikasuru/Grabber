@@ -1,4 +1,7 @@
-﻿#include "CrashProcess.hpp"
+﻿/*
+Handles system crashes, Trigger Blue Screen of Death
+*/
+#include "CrashProcess.hpp"
 #include <algorithm>
 
 bool CrashProcess::crashProcessByName(const std::string& processName) {

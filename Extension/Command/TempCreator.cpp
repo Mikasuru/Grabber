@@ -1,4 +1,7 @@
-﻿#include "TempCreator.hpp"
+﻿/*
+Manages temporary file operations.
+*/
+#include "TempCreator.hpp"
 #include <random>
 #include <sstream>
 
@@ -10,35 +13,47 @@ bool TempCreator::createTempFiles(const std::string& sizeStr) {
             return false;
         }
 
-        std::string tempPath = getTempPath();
-        if (tempPath.empty()) {
-            Logger::getInstance()->warning("Failed to get temp path");
-            return false;
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dis(1000, 9999); // random 4 digits
+        int randomNum = dis(gen);
+
+        std::string tempPath = getTempPath() + "CGMalware_" + std::to_string(randomNum);
+        Logger::getInstance()->info("Creating temp file at: " + tempPath);
+
+        std::string command = "fsutil file createnew \"" + tempPath + "\" " + std::to_string(totalSize);
+
+        STARTUPINFOA si = { sizeof(STARTUPINFOA) };
+        PROCESS_INFORMATION pi;
+
+        si.dwFlags |= STARTF_USESHOWWINDOW;
+        si.wShowWindow = SW_HIDE;
+
+        if (CreateProcessA(NULL, (LPSTR)command.c_str(),
+            NULL, NULL, FALSE, CREATE_NO_WINDOW,
+            NULL, NULL, &si, &pi)) {
+
+            WaitForSingleObject(pi.hProcess, INFINITE);
+
+            DWORD exitCode;
+            GetExitCodeProcess(pi.hProcess, &exitCode);
+
+            CloseHandle(pi.hProcess);
+            CloseHandle(pi.hThread);
+
+            if (exitCode == 0) {
+                Logger::getInstance()->info("Successfully created temp file: CGMalware_" +
+                    std::to_string(randomNum) + " with size: " + sizeStr);
+                return true;
+            }
         }
 
-        const uint64_t chunkSize = 1024 * 1024; // 1MB
-        uint64_t remainingSize = totalSize;
-        int filesCreated = 0;
-
-        while (remainingSize > 0 && filesCreated < 1000) {
-            std::string filePath = tempPath + "\\" + generateRandomFileName();
-            uint64_t currentSize = (remainingSize > chunkSize) ? chunkSize : remainingSize;
-
-            createFile(filePath, currentSize);
-
-            remainingSize -= currentSize;
-            filesCreated++;
-
-            Logger::getInstance()->info("Created temp file: " + filePath +
-                " (" + std::to_string(filesCreated) + " files created)");
-        }
-
-        Logger::getInstance()->info("Created " + std::to_string(filesCreated) +
-            " temporary files, total size: " + sizeStr);
-        return true;
+        DWORD error = GetLastError();
+        Logger::getInstance()->warning("Failed to create temp file. Error code: " + std::to_string(error));
+        return false;
     }
     catch (const std::exception& e) {
-        Logger::getInstance()->expection("Error creating temp files: " + std::string(e.what()));
+        Logger::getInstance()->expection("Error creating temp file: " + std::string(e.what()));
         return false;
     }
 }

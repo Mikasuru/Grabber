@@ -1,4 +1,7 @@
-﻿#include "VolumeManager.hpp"
+﻿/*
+Manages audio settings
+*/
+#include "VolumeManager.hpp"
 #include <mmdeviceapi.h>
 #include <endpointvolume.h>
 #pragma comment(lib, "ole32.lib")

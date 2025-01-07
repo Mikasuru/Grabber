@@ -1,4 +1,8 @@
-﻿#include "ScreenProcess.hpp"
+﻿/*
+* Noted: Unused code.
+Handle screen capture functionality
+*/
+#include "ScreenProcess.hpp"
 #include <wininet.h>
 #include "../GetDevice/Hardware.hpp"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -36,7 +40,6 @@ bool ScreenProcess::captureScreen() {
         SelectObject(hdcMem, hBitmap);
         BitBlt(hdcMem, 0, 0, width, height, hdcScreen, 0, 0, SRCCOPY);
 
-        // แปลงเป็น JPG ด้วย WIC
         IWICImagingFactory* factory = NULL;
         IWICBitmapEncoder* encoder = NULL;
         IWICBitmapFrameEncode* frame = NULL;
@@ -258,7 +261,7 @@ bool ScreenProcess::sendScreenshotToServer(const std::string& base64Data, int wi
 
         Logger::getInstance()->info("Screenshot sent successfully");
 
-        // ตรวจสอบ response
+        // Check response
         char buffer[1024];
         DWORD bytesRead;
         std::string response;

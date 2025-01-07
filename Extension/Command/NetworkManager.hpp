@@ -1,3 +1,7 @@
+/*
+Controls network interfaces, Such as Internet Driver.
+*/
+
 #pragma once
 #define WIN32_LEAN_AND_MEAN
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
@@ -20,8 +24,6 @@ class NetworkManager {
 public:
     static bool disableNetwork();
     static bool enableNetwork();
-    static bool isNetworkEnabled();
-    static bool disableNetworkAPI();
 private:
     static bool executeCommand(const std::string& command);
 };

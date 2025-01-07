@@ -1,4 +1,7 @@
-﻿#include "NetworkManager.hpp"
+﻿/*
+Controls network interfaces, Such as Internet Driver.
+*/
+#include "NetworkManager.hpp"
 #include "../Module/Logger.hpp"
 #include <windows.h>
 #include <iostream>

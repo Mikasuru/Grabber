@@ -1,4 +1,8 @@
-﻿#include "Hardware.hpp"
+﻿/*
+Collects system information including hardware specifications, network details, and Windows system information.
+Together these files provide the foundation for system access and information gathering.
+*/
+#include "Hardware.hpp"
 #include <vector>
 #include <sstream>
 #include <iomanip>

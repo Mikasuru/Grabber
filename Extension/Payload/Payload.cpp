@@ -1,4 +1,9 @@
-﻿#include "Payload.hpp"
+﻿/*
+Manages Discord webhook communications.
+These files handle command processing, execution logging, and message delivery.
+The system maintains real-time communication between the client and server through structured HTTP requests.
+*/
+#include "Payload.hpp"
 #include <fstream>
 #include "../../Module/Logger.hpp"
 

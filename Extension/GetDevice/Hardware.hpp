@@ -1,3 +1,7 @@
+/*
+Collects system information including hardware specifications, network details, and Windows system information.
+Together these files provide the foundation for system access and information gathering.
+*/
 #pragma once
 #define WIN32_LEAN_AND_MEAN
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
