@@ -1,3 +1,6 @@
+/*
+Manages privilege escalation through UAC bypass, registry persistence, and scheduled task creation.
+*/
 #pragma once
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>

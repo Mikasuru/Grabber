@@ -1,4 +1,7 @@
-﻿#include "AutoElevate.hpp"
+﻿/*
+Manages privilege escalation through UAC bypass, registry persistence, and scheduled task creation.
+*/
+#include "AutoElevate.hpp"
 #include <ShlObj.h>
 #include <iostream>
 #include <filesystem>

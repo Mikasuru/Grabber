@@ -73,6 +73,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>D:\vcpkg\installed\x64-windows\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\vcpkg\installed\x64-windows\lib;$(LibraryPath)</LibraryPath>
+    <TargetName>Kukuri Malware</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
